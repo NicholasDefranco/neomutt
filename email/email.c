@@ -159,3 +159,65 @@ int emaillist_add_email(struct EmailList *el, struct Email *e)
 
   return 0;
 }
+
+/**
+ * header_find - Find a header, matching on its field, in a list of headers
+ * @param hdrlist List of headers to search
+ * @param header  The header to search for. Either of the form "X-Header:" or "X-Header: value"
+ * @retval node   The node in the list matching the header
+ * @retval NULL   If no matching header is found
+ */
+struct ListNode *header_find(const struct ListHead *hdrlist, const char *header)
+{
+  struct ListNode *n = NULL;
+
+  const int keylen = strchr(header, ':') - header + 1;
+
+  STAILQ_FOREACH(n, hdrlist, entries)
+  {
+    if (mutt_istrn_equal(n->data, header, keylen))
+      return n;
+  }
+  return n;
+}
+
+/**
+ * header_add - Add a header to a list
+ * @param hdrlist List of headers to search
+ * @param header  String to set as the header
+ * @retval node   The created header
+ */
+struct ListNode *header_add(struct ListHead *hdrlist, const char *header)
+{
+  struct ListNode *n = mutt_list_insert_tail(hdrlist, NULL);
+  n->data = mutt_str_dup(header);
+
+  return n;
+}
+
+/**
+ * header_update - Update an existing header
+ * @param hdr     The header to update
+ * @param header  String to update the header with
+ * @retval node   The updated header
+ */
+struct ListNode *header_update(struct ListNode *hdr, const char *header)
+{
+  FREE(&hdr->data);
+  hdr->data = mutt_str_dup(header);
+
+  return hdr;
+}
+
+/**
+ * header_set - Set a header value in a list. If a header exists with the same field, update it, otherwise add a new header
+ * @param hdrlist List of headers to search
+ * @param Header  String to set the value of the header to
+ * @retval node   The updated or created header
+ */
+struct ListNode *header_set(struct ListHead *hdrlist, const char *header)
+{
+  struct ListNode *n = header_find(hdrlist, header);
+
+  return n == NULL ? header_add(hdrlist, header) : header_update(n, header);
+}
