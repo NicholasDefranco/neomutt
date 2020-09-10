@@ -127,7 +127,7 @@ int alias_config_observer(struct NotifyCallback *nc)
   if (!mutt_str_equal(ec->name, "sort_alias"))
     return 0;
 
-  struct AliasMenuData *mdata = nc->global_data;
+  struct AliasMenuArray *mdata = nc->global_data;
 
   menu_data_sort(mdata);
 
@@ -182,12 +182,12 @@ sort_t alias_get_sort_function(short sort)
 }
 
 /**
- * menu_data_clear - Empty an AliasMenuData
+ * menu_data_clear - Empty an AliasMenuArray
  * @param mdata  Menu data holding Aliases
  *
  * Free the AliasViews but not the Aliases.
  */
-void menu_data_clear(struct AliasMenuData *mdata)
+void menu_data_clear(struct AliasMenuArray *mdata)
 {
   if (!mdata)
     return;
@@ -201,40 +201,40 @@ void menu_data_clear(struct AliasMenuData *mdata)
 }
 
 /**
- * menu_data_free - Free an AliasMenuData
- * @param[out] ptr AliasMenuData to free
+ * menu_data_free - Free an AliasMenuArray
+ * @param[out] ptr AliasMenuArray to free
  */
-void menu_data_free(struct AliasMenuData **ptr)
+void menu_data_free(struct AliasMenuArray **ptr)
 {
   if (!ptr || !*ptr)
     return;
 
-  struct AliasMenuData *mdata = *ptr;
+  struct AliasMenuArray *mdata = *ptr;
   menu_data_clear(mdata);
   ARRAY_FREE(mdata);
   FREE(ptr);
 }
 
 /**
- * menu_data_new - Create a new AliasMenuData
- * @retval ptr Newly allocated AliasMenuData
+ * menu_data_new - Create a new AliasMenuArray
+ * @retval ptr Newly allocated AliasMenuArray
  *
  * All the GUI data required to maintain the Menu.
  */
-struct AliasMenuData *menu_data_new(void)
+struct AliasMenuArray *menu_data_new(void)
 {
-  return mutt_mem_calloc(1, sizeof(struct AliasMenuData));
+  return mutt_mem_calloc(1, sizeof(struct AliasMenuArray));
 }
 
 /**
- * menu_data_alias_add - Add an Alias to the AliasMenuData
+ * menu_data_alias_add - Add an Alias to the AliasMenuArray
  * @param mdata Menu data holding Aliases
  * @param alias Alias to add
  *
  * @note The Alias is wrapped in an AliasView
- * @note Call menu_data_sort() to sort and reindex the AliasMenuData
+ * @note Call menu_data_sort() to sort and reindex the AliasMenuArray
  */
-int menu_data_alias_add(struct AliasMenuData *mdata, struct Alias *alias)
+int menu_data_alias_add(struct AliasMenuArray *mdata, struct Alias *alias)
 {
   if (!mdata || !alias)
     return -1;
@@ -251,13 +251,13 @@ int menu_data_alias_add(struct AliasMenuData *mdata, struct Alias *alias)
 }
 
 /**
- * menu_data_alias_delete - Delete an Alias from the AliasMenuData
+ * menu_data_alias_delete - Delete an Alias from the AliasMenuArray
  * @param mdata Menu data holding Aliases
  * @param alias Alias to remove
  *
- * @note Call menu_data_sort() to sort and reindex the AliasMenuData
+ * @note Call menu_data_sort() to sort and reindex the AliasMenuArray
  */
-int menu_data_alias_delete(struct AliasMenuData *mdata, struct Alias *alias)
+int menu_data_alias_delete(struct AliasMenuArray *mdata, struct Alias *alias)
 {
   if (!mdata || !alias)
     return -1;
@@ -276,10 +276,10 @@ int menu_data_alias_delete(struct AliasMenuData *mdata, struct Alias *alias)
 }
 
 /**
- * menu_data_sort - Sort and reindex an AliasMenuData
+ * menu_data_sort - Sort and reindex an AliasMenuArray
  * @param mdata Menu data holding Aliases
  */
-void menu_data_sort(struct AliasMenuData *mdata)
+void menu_data_sort(struct AliasMenuArray *mdata)
 {
   ARRAY_SORT(mdata, alias_get_sort_function(C_SortAlias));
 

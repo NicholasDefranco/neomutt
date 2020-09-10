@@ -121,7 +121,7 @@ static const char *alias_format_str(char *buf, size_t buflen, size_t col, int co
  */
 static void alias_make_entry(char *buf, size_t buflen, struct Menu *menu, int line)
 {
-  const struct AliasMenuData *mdata = menu->mdata;
+  const struct AliasMenuArray *mdata = menu->mdata;
   const struct AliasView *av = ARRAY_GET(mdata, line);
 
   mutt_expando_format(buf, buflen, 0, menu->win_index->state.cols, NONULL(C_AliasFormat),
@@ -133,7 +133,7 @@ static void alias_make_entry(char *buf, size_t buflen, struct Menu *menu, int li
  */
 static int alias_tag(struct Menu *menu, int sel, int act)
 {
-  struct AliasMenuData *mdata = (struct AliasMenuData *) menu->mdata;
+  struct AliasMenuArray *mdata = (struct AliasMenuArray *) menu->mdata;
   struct AliasView *av = ARRAY_GET(mdata, sel);
 
   bool ot = av->is_tagged;
@@ -155,7 +155,7 @@ static int alias_alias_observer(struct NotifyCallback *nc)
 
   struct EventAlias *ea = nc->event_data;
   struct Menu *menu = nc->global_data;
-  struct AliasMenuData *mdata = menu->mdata;
+  struct AliasMenuArray *mdata = menu->mdata;
   struct Alias *alias = ea->alias;
 
   if (nc->event_subtype == NT_ALIAS_NEW)
@@ -179,7 +179,7 @@ static int alias_alias_observer(struct NotifyCallback *nc)
  * @param buflen Length of buffer
  * @param mdata  Menu data holding Aliases
  */
-static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuData *mdata)
+static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuArray *mdata)
 {
   if (ARRAY_EMPTY(mdata))
   {
@@ -297,6 +297,9 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuData *mda
           menu->redraw |= REDRAW_MOTION;
         break;
 
+      case OP_MAIN_LIMIT:
+        break;
+
       case OP_GENERIC_SELECT_ENTRY:
         t = menu->current;
         if (t >= ARRAY_SIZE(mdata))
@@ -347,7 +350,7 @@ int alias_complete(char *buf, size_t buflen)
 {
   struct Alias *np = NULL;
   char bestname[8192] = { 0 };
-  struct AliasMenuData mdata = ARRAY_HEAD_INITIALIZER;
+  struct AliasMenuArray mdata = ARRAY_HEAD_INITIALIZER;
 
   if (buf[0] != '\0')
   {

@@ -529,7 +529,7 @@ int mutt_search_alias_command(struct Menu *menu, int cur, int op)
 {
   struct Progress progress;
 
-  struct AliasMenuData *mdata = (struct AliasMenuData *) menu->mdata;
+  struct AliasMenuArray *mdata = (struct AliasMenuArray *) menu->mdata;
 
   if ((*LastSearch == '\0') || ((op != OP_SEARCH_NEXT) && (op != OP_SEARCH_OPPOSITE)))
   {

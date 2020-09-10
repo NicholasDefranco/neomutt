@@ -99,7 +99,7 @@ static bool alias_to_addrlist(struct AddressList *al, struct Alias *alias)
  */
 static int query_search(struct Menu *menu, regex_t *rx, int line)
 {
-  struct AliasMenuData *mdata = menu->mdata;
+  struct AliasMenuArray *mdata = menu->mdata;
   struct AliasView *av = ARRAY_GET(mdata, line);
   struct Alias *alias = av->alias;
 
@@ -200,7 +200,7 @@ static const char *query_format_str(char *buf, size_t buflen, size_t col, int co
  */
 static void query_make_entry(char *buf, size_t buflen, struct Menu *menu, int line)
 {
-  struct AliasMenuData *mdata = menu->mdata;
+  struct AliasMenuArray *mdata = menu->mdata;
   struct AliasView *av = ARRAY_GET(mdata, line);
 
   mutt_expando_format(buf, buflen, 0, menu->win_index->state.cols, NONULL(C_QueryFormat),
@@ -212,7 +212,7 @@ static void query_make_entry(char *buf, size_t buflen, struct Menu *menu, int li
  */
 static int query_tag(struct Menu *menu, int sel, int act)
 {
-  struct AliasMenuData *mdata = menu->mdata;
+  struct AliasMenuArray *mdata = menu->mdata;
   struct AliasView *av = ARRAY_GET(mdata, sel);
 
   bool ot = av->is_tagged;
@@ -302,7 +302,7 @@ static int query_run(char *s, bool verbose, struct AliasList *al)
  */
 static void dlg_select_query(char *buf, size_t buflen, struct AliasList *all, bool retbuf)
 {
-  struct AliasMenuData mdata = ARRAY_HEAD_INITIALIZER;
+  struct AliasMenuArray mdata = ARRAY_HEAD_INITIALIZER;
   struct Alias *np = NULL;
   TAILQ_FOREACH(np, all, entries)
   {

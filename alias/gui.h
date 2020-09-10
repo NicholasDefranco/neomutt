@@ -40,17 +40,18 @@ struct AliasView
   bool is_matched  : 1; ///< Search matches this Alias
   bool is_tagged   : 1; ///< Is it tagged?
   bool is_deleted  : 1; ///< Is it deleted?
+  bool is_visible  : 1; ///< Is visible?
   struct Alias *alias;  ///< Alias
 };
 
-ARRAY_HEAD(AliasMenuData, struct AliasView);
+ARRAY_HEAD(AliasMenuArray, struct AliasView);
 
 int alias_config_observer(struct NotifyCallback *nc);
 int alias_color_observer (struct NotifyCallback *nc);
 
-int  menu_data_alias_add   (struct AliasMenuData *mdata, struct Alias *alias);
-int  menu_data_alias_delete(struct AliasMenuData *mdata, struct Alias *alias);
-void menu_data_sort        (struct AliasMenuData *mdata);
+int menu_data_alias_add   (struct AliasMenuArray *mdata, struct Alias *alias);
+int menu_data_alias_delete(struct AliasMenuArray *mdata, struct Alias *alias);
+void menu_data_sort       (struct AliasMenuArray *mdata);
 
 sort_t alias_get_sort_function(short sort);
 
