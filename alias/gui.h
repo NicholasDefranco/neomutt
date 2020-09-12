@@ -46,6 +46,13 @@ struct AliasView
 
 ARRAY_HEAD(AliasMenuArray, struct AliasView);
 
+struct AliasMenuData
+{
+  char* str;
+  struct Pattern *pat;
+  struct AliasMenuArray marray;
+};
+
 int alias_config_observer(struct NotifyCallback *nc);
 int alias_color_observer (struct NotifyCallback *nc);
 

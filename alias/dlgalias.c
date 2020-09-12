@@ -179,9 +179,9 @@ static int alias_alias_observer(struct NotifyCallback *nc)
  * @param buflen Length of buffer
  * @param mdata  Menu data holding Aliases
  */
-static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuArray *mdata)
+static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuData *mdata)
 {
-  if (ARRAY_EMPTY(mdata))
+  if (ARRAY_EMPTY(&mdata->marray))
   {
     mutt_warning(_("You have no aliases"));
     return;
@@ -199,8 +199,8 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuArray *md
   menu->custom_search = true;
   menu->tag = alias_tag;
   menu->title = _("Aliases");
-  menu->max = ARRAY_SIZE(mdata);
-  menu->mdata = mdata;
+  menu->max = ARRAY_SIZE(&mdata->marray);
+  menu->mdata = &mdata->marray;
 
   notify_observer_add(NeoMutt->notify, NT_ALIAS, alias_alias_observer, menu);
   notify_observer_add(NeoMutt->notify, NT_CONFIG, alias_config_observer, mdata);
@@ -208,10 +208,10 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuArray *md
 
   mutt_menu_push_current(menu);
 
-  ARRAY_SORT(mdata, alias_get_sort_function(C_SortAlias));
+  ARRAY_SORT(&mdata->marray, alias_get_sort_function(C_SortAlias));
 
   struct AliasView *avp = NULL;
-  ARRAY_FOREACH(avp, mdata)
+  ARRAY_FOREACH(avp, &mdata->marray)
   {
     avp->num = ARRAY_FOREACH_IDX;
   }
@@ -225,7 +225,7 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuArray *md
       case OP_UNDELETE:
         if (menu->tagprefix)
         {
-          ARRAY_FOREACH(avp, mdata)
+          ARRAY_FOREACH(avp, &mdata->marray)
           {
             if (avp->is_tagged)
               avp->is_deleted = (op == OP_DELETE);
@@ -234,7 +234,7 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuArray *md
         }
         else
         {
-          ARRAY_GET(mdata, menu->current)->is_deleted = (op == OP_DELETE);
+          ARRAY_GET(&mdata->marray, menu->current)->is_deleted = (op == OP_DELETE);
           menu->redraw |= REDRAW_CURRENT;
           if (C_Resolve && (menu->current < menu->max - 1))
           {
@@ -302,7 +302,7 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuArray *md
 
       case OP_GENERIC_SELECT_ENTRY:
         t = menu->current;
-        if (t >= ARRAY_SIZE(mdata))
+        if (t >= ARRAY_SIZE(&mdata->marray))
           t = -1;
         done = true;
         break;
@@ -312,7 +312,7 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuArray *md
     }
   }
 
-  ARRAY_FOREACH(avp, mdata)
+  ARRAY_FOREACH(avp, &mdata->marray)
   {
     if (avp->is_tagged)
     {
@@ -323,7 +323,7 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuArray *md
 
   if (t != -1)
   {
-    mutt_addrlist_write(&ARRAY_GET(mdata, t)->alias->addr, buf, buflen, true);
+    mutt_addrlist_write(&ARRAY_GET(&mdata->marray, t)->alias->addr, buf, buflen, true);
   }
 
   notify_observer_remove(NeoMutt->notify, alias_alias_observer, menu);
@@ -350,7 +350,7 @@ int alias_complete(char *buf, size_t buflen)
 {
   struct Alias *np = NULL;
   char bestname[8192] = { 0 };
-  struct AliasMenuArray mdata = ARRAY_HEAD_INITIALIZER;
+  struct AliasMenuData mdata = { NULL, NULL, ARRAY_HEAD_INITIALIZER };
 
   if (buf[0] != '\0')
   {
@@ -388,20 +388,20 @@ int alias_complete(char *buf, size_t buflen)
       {
         if (np->name && mutt_strn_equal(np->name, buf, strlen(buf)))
         {
-          menu_data_alias_add(&mdata, np);
+          menu_data_alias_add(&mdata.marray, np);
         }
       }
     }
   }
 
-  if (ARRAY_EMPTY(&mdata))
+  if (ARRAY_EMPTY(&mdata.marray))
   {
     TAILQ_FOREACH(np, &Aliases, entries)
     {
-      menu_data_alias_add(&mdata, np);
+      menu_data_alias_add(&mdata.marray, np);
     }
   }
-  menu_data_sort(&mdata);
+  menu_data_sort(&mdata.marray);
 
   bestname[0] = '\0';
   dlg_select_alias(bestname, sizeof(bestname), &mdata);
@@ -409,7 +409,7 @@ int alias_complete(char *buf, size_t buflen)
     mutt_str_copy(buf, bestname, buflen);
 
   struct AliasView *avp = NULL;
-  ARRAY_FOREACH(avp, &mdata)
+  ARRAY_FOREACH(avp, &mdata.marray)
   {
     if (!avp->is_deleted)
       continue;
@@ -418,7 +418,7 @@ int alias_complete(char *buf, size_t buflen)
     alias_free(&avp->alias);
   }
 
-  ARRAY_FREE(&mdata);
+  ARRAY_FREE(&mdata.marray);
 
   return 0;
 }
