@@ -198,8 +198,6 @@ sort_t alias_get_sort_function(short sort)
       return alias_sort_name;
     case SORT_ADDRESS:
       return alias_sort_address;
-    case 231:
-      return alias_sort_visibility;
     case SORT_ORDER:
       return alias_sort_unsort;
     default:

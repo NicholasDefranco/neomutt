@@ -198,7 +198,7 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuData *mda
   menu->make_entry = alias_make_entry;
   menu->custom_search = true;
   menu->tag = alias_tag;
-  menu->title = _("Aliases");
+  menu->title = strdup(_("Aliases"));
   menu->max = ARRAY_SIZE(&mdata->marray);
   menu->mdata = &mdata->marray;
 
@@ -340,7 +340,10 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuData *mda
   notify_observer_remove(NeoMutt->notify, alias_color_observer, menu);
 
   mutt_menu_pop_current(menu);
+
+  FREE(&menu->title);
   mutt_menu_free(&menu);
+
   dialog_destroy_simple_index(&dlg);
 }
 
