@@ -221,3 +221,15 @@ struct ListNode *header_set(struct ListHead *hdrlist, const char *header)
 
   return n == NULL ? header_add(hdrlist, header) : header_update(n, header);
 }
+
+/**
+ * header_free - Free and remove a header from a header list
+ * @param hdrlist List to free the header from
+ * @param target  The header to free
+ * */
+void header_free(struct ListHead *hdrlist, struct ListNode *target)
+{
+  STAILQ_REMOVE(hdrlist, target, ListNode, entries);
+  FREE(&target->data);
+  FREE(&target);
+}

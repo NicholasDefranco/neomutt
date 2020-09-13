@@ -181,5 +181,6 @@ struct ListNode *header_find(const struct ListHead *hdrlist, const char *header)
 struct ListNode *header_add(struct ListHead *hdrlist, const char *header);
 struct ListNode *header_update(struct ListNode *hdrnode, const char *header);
 struct ListNode *header_set(struct ListHead *hdrlist, const char *header);
+void header_free(struct ListHead *hdrlist, struct ListNode *target);
 
 #endif /* MUTT_EMAIL_EMAIL_H */
