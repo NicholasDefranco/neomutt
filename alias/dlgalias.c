@@ -155,20 +155,21 @@ static int alias_alias_observer(struct NotifyCallback *nc)
 
   struct EventAlias *ea = nc->event_data;
   struct Menu *menu = nc->global_data;
-  struct AliasMenuArray *mdata = menu->mdata;
+  struct AliasMenuData *mdata = menu->mdata;
   struct Alias *alias = ea->alias;
 
   if (nc->event_subtype == NT_ALIAS_NEW)
   {
-    menu_data_alias_add(mdata, alias);
+    menu_data_alias_add(&mdata->marray, alias);
   }
   else if (nc->event_subtype == NT_ALIAS_DELETED)
   {
-    menu_data_alias_delete(mdata, alias);
+    menu_data_alias_delete(&mdata->marray, alias);
   }
-  menu_data_sort(mdata);
 
-  menu->max = ARRAY_SIZE(mdata);
+  menu_data_sort(&mdata->marray);
+
+  menu->max = ARRAY_SIZE(&mdata->marray);
   menu->redraw = REDRAW_FULL;
   return 0;
 }

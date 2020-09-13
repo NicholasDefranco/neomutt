@@ -151,9 +151,9 @@ int alias_config_observer(struct NotifyCallback *nc)
   if (!mutt_str_equal(ec->name, "sort_alias"))
     return 0;
 
-  struct AliasMenuArray *mdata = nc->global_data;
+  struct AliasMenuData *mdata = nc->global_data;
 
-  menu_data_sort(mdata);
+  menu_data_sort(&mdata->marray);
 
   return 0;
 }
