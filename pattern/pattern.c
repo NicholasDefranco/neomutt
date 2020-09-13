@@ -223,7 +223,7 @@ bool mutt_limit_current_thread(struct Email *e)
   return true;
 }
 
-int mutt_pattern_alias_func(int op, char *prompt, struct AliasMenuArray *marray)
+int mutt_pattern_alias_func(int op, char *prompt, struct AliasMenuArray *marray, int *count)
 {
   int rc = -1;
   struct Progress progress;
@@ -262,6 +262,7 @@ int mutt_pattern_alias_func(int op, char *prompt, struct AliasMenuArray *marray)
   mutt_progress_init(&progress, _("Executing command on matching messages..."),
                      MUTT_PROGRESS_READ, ARRAY_SIZE(marray));
 
+  int vcounter = 0;
   struct AliasView *avp = NULL;
   ARRAY_FOREACH(avp, marray)
   {
@@ -270,10 +271,13 @@ int mutt_pattern_alias_func(int op, char *prompt, struct AliasMenuArray *marray)
     if (match_all || mutt_pattern_alias_exec(SLIST_FIRST(pat), MUTT_MATCH_FULL_ADDRESS, avp, NULL))
     {
       avp->is_visible = true;
+      vcounter++;
     } else {
       avp->is_visible = false;
     }
   }
+
+  *count = vcounter;
 
   mutt_clear_error();
 

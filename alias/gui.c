@@ -53,7 +53,13 @@ int alias_sort_name(const void *a, const void *b)
   const struct AliasView *av_a = a;
   const struct AliasView *av_b = b;
 
-  int r = mutt_str_coll(av_a->alias->name, av_b->alias->name);
+  int r;
+
+  if (av_a->is_visible == av_b->is_visible) {
+    r = mutt_str_coll(av_a->alias->name, av_b->alias->name);
+  } else {
+    r = (av_a->is_visible == av_b->is_visible) ? 0 : av_a->is_visible ? -1 : 1;
+  }
 
   return RSORT(r);
 }
