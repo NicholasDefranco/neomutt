@@ -223,7 +223,7 @@ bool mutt_limit_current_thread(struct Email *e)
   return true;
 }
 
-int mutt_pattern_alias_func(int op, char *prompt, struct AliasMenuArray *marray, int *count)
+int mutt_pattern_alias_func(int op, char *prompt, struct AliasMenuArray *marray, struct Menu *m)
 {
   int rc = -1;
   struct Progress progress;
@@ -277,7 +277,17 @@ int mutt_pattern_alias_func(int op, char *prompt, struct AliasMenuArray *marray,
     }
   }
 
-  *count = vcounter;
+  m->max = vcounter;
+
+  char *tmp_str = NULL;
+  char *new_title = NULL;
+
+  mutt_str_asprintf(&tmp_str, _("Limit: %s"), buf->data);
+  mutt_str_asprintf(&new_title, "Aliases - %s", tmp_str);
+
+  m->title = new_title;
+
+  FREE(&tmp_str);
 
   mutt_clear_error();
 

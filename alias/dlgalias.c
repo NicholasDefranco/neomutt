@@ -300,11 +300,10 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuData *mda
       case OP_MAIN_LIMIT:
       {
         int result = mutt_pattern_alias_func(
-            MUTT_LIMIT, _("Limit to messages matching: "), &mdata->marray, &menu->max);
+            MUTT_LIMIT, _("Limit to messages matching: "), &mdata->marray, menu);
+
 
         menu_data_sort(&mdata->marray);
-
-        //menu->max = 2;
         menu->redraw = REDRAW_FULL;
 
         break;
