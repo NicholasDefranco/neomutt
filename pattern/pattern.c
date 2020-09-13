@@ -223,6 +223,71 @@ bool mutt_limit_current_thread(struct Email *e)
   return true;
 }
 
+int mutt_pattern_alias_func(int op, char *prompt, struct AliasMenuArray *marray)
+{
+  int rc = -1;
+  struct Progress progress;
+  struct Buffer err;
+  struct Buffer *buf = mutt_buffer_pool_get();
+
+  if (prompt)
+  {
+    if ((mutt_buffer_get_field(prompt, buf, MUTT_PATTERN | MUTT_CLEAR) != 0) ||
+        mutt_buffer_is_empty(buf))
+    {
+      mutt_buffer_pool_release(&buf);
+      return -1;
+    }
+  }
+
+  mutt_message(_("Compiling search pattern..."));
+
+  char *simple = mutt_buffer_strdup(buf);
+  mutt_check_simple(buf, NONULL(C_SimpleSearch));
+  const char *pbuf = buf->data;
+  while (*pbuf == ' ')
+    pbuf++;
+  const bool match_all = mutt_str_equal(pbuf, "~A");
+
+  mutt_buffer_init(&err);
+  err.dsize = 256;
+  err.data = mutt_mem_malloc(err.dsize);
+  struct PatternList *pat = mutt_pattern_comp(buf->data, MUTT_PC_FULL_MSG, &err);
+  if (!pat)
+  {
+    mutt_error("%s", err.data);
+    goto bail;
+  }
+
+  mutt_progress_init(&progress, _("Executing command on matching messages..."),
+                     MUTT_PROGRESS_READ, ARRAY_SIZE(marray));
+
+  struct AliasView *avp = NULL;
+  ARRAY_FOREACH(avp, marray)
+  {
+    mutt_progress_update(&progress, ARRAY_FOREACH_IDX, -1);
+
+    if (match_all || mutt_pattern_alias_exec(SLIST_FIRST(pat), MUTT_MATCH_FULL_ADDRESS, avp, NULL))
+    {
+      avp->is_visible = true;
+    } else {
+      avp->is_visible = false;
+    }
+  }
+
+  mutt_clear_error();
+
+  rc = 0;
+
+bail:
+  mutt_buffer_pool_release(&buf);
+  FREE(&simple);
+  mutt_pattern_free(&pat);
+  FREE(&err.data);
+
+  return rc;
+}
+
 /**
  * mutt_pattern_func - Perform some Pattern matching
  * @param op     Operation to perform, e.g. #MUTT_LIMIT

@@ -297,8 +297,12 @@ static void dlg_select_alias(char *buf, size_t buflen, struct AliasMenuData *mda
           menu->redraw |= REDRAW_MOTION;
         break;
 
-      case OP_MAIN_LIMIT:
+      case OP_MAIN_LIMIT: {
+        int result = mutt_pattern_alias_func(MUTT_LIMIT, _("Limit to messages matching: "),
+                                &mdata->marray);
+
         break;
+      }
 
       case OP_GENERIC_SELECT_ENTRY:
         t = menu->current;
