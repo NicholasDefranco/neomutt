@@ -59,6 +59,24 @@ int alias_sort_name(const void *a, const void *b)
 }
 
 /**
+ * alias_sort_visibility - Compare two Aliases by their visibility
+ * @param a First  Alias to compare
+ * @param b Second Alias to compare
+ * @retval -1 a precedes b
+ * @retval  0 a and b are identical
+ * @retval  1 b precedes a
+ */
+int alias_sort_visibility(const void *a, const void *b)
+{
+  const struct AliasView *av_a = a;
+  const struct AliasView *av_b = b;
+
+  int r = (av_a->is_visible == av_b->is_visible) ? 0 : av_a->is_visible ? 1 : -1;
+
+  return RSORT(r);
+}
+
+/**
  * alias_sort_address - Compare two Aliases by their Addresses
  * @param a First  Alias to compare
  * @param b Second Alias to compare
@@ -174,6 +192,8 @@ sort_t alias_get_sort_function(short sort)
       return alias_sort_name;
     case SORT_ADDRESS:
       return alias_sort_address;
+    case 231:
+      return alias_sort_visibility;
     case SORT_ORDER:
       return alias_sort_unsort;
     default:
