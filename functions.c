@@ -597,6 +597,7 @@ const struct Binding OpBrowser[] = { /* map: browser */
  */
 const struct Binding OpQuery[] = { /* map: query */
   { "create-alias",          OP_CREATE_ALIAS,                "a" },
+  { "limit",                 OP_MAIN_LIMIT,                  "l" },
   { "mail",                  OP_MAIL,                        "m" },
   { "query",                 OP_QUERY,                       "Q" },
   { "query-append",          OP_QUERY_APPEND,                "A" },

@@ -283,7 +283,7 @@ int mutt_pattern_alias_func(int op, char *prompt, struct AliasMenuArray *marray,
   char *new_title = NULL;
 
   mutt_str_asprintf(&tmp_str, _("Limit: %s"), buf->data);
-  mutt_str_asprintf(&new_title, "Aliases - %s", tmp_str);
+  mutt_str_asprintf(&new_title, "%s - %s", m->title, tmp_str);
 
   FREE(&m->title);
 

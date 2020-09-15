@@ -53,6 +53,7 @@ int alias_sort_name(const void *a, const void *b)
   const struct AliasView *av_a = a;
   const struct AliasView *av_b = b;
 
+  // TODO(romeu): review this
   if (av_a->is_visible != av_b->is_visible) {
     return av_a->is_visible ? -1 : 1;
   }
